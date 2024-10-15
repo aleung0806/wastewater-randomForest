@@ -31,39 +31,56 @@ X = df[['day of year', 'rainfall']]  #features
 X1 = df['day of year'] 
 X2 = df['rainfall']
 
+y1 = df['average flow']  #target variable
+y2 = df['max flow']  #target variable
+
+
+
 #select one!
 # y = df['average flow']  #target variable
-# y = df['max flow']  #target variable
-y = df['fe flow']  #target variable
+y = df['max flow']  #target variable
+# y = df[['max flow', 'average flow']]  #target variable
 
 
 #split into train/test sets
 X_train, X_test, y_train, y_test = train_test_split(X, y, test_size=0.2, random_state=6)
 
 
-#hyperparameter options
-random_grid = {
-    'bootstrap': [True, False],
-    'max_depth': [10, 20, 30, 40, 50, 60, 70, 80, 90, 100, None],
-    'max_features': ['log2', 'sqrt'],
-    'min_samples_leaf': [1, 2, 4],
-    'min_samples_split': [2, 5, 10],
-    'n_estimators': [200, 400, 600, 800, 1000, 1200, 1400, 1600, 1800, 2000]
-}
 
+# random hyperparameters
+# random_grid = {
+#     'bootstrap': [True, False],
+#     'max_depth': [10, 20, 30, 40, 50, 60, 70, 80, 90, 100, None],
+#     'max_features': ['log2', 'sqrt'],
+#     'min_samples_leaf': [1, 2, 4],
+#     'min_samples_split': [2, 5, 10],
+#     'n_estimators': [200, 400, 600, 800, 1000, 1200, 1400, 1600, 1800, 2000]
+# }
+# regressor = RandomForestRegressor()
+# rf = RandomizedSearchCV(estimator=regressor, param_distributions=random_grid, n_iter=100, cv=3, verbose=2, random_state=42, n_jobs = -1)
 
-#set up model with randomized hyperparameters
-rf = RandomForestRegressor()
-rf_random = RandomizedSearchCV(estimator=rf, param_distributions=random_grid, n_iter=100, cv=3, verbose=2, random_state=42, n_jobs = -1)
+#multi output
+rf = RandomForestRegressor(n_estimators=1400, min_samples_split=5, min_samples_leaf=4, max_features='sqrt', max_depth=10, bootstrap=True)
+
+# single output (average flow)
+# rf = RandomForestRegressor(n_estimators=2000, min_samples_split=10, min_samples_leaf=2, max_features='sqrt', max_depth=10, bootstrap=True)
+
+# single output (max flow)
+# rf = RandomForestRegressor(n_estimators=1400, min_samples_split=5, min_samples_leaf=4, max_features='sqrt', max_depth=10, bootstrap=True)
+
 
 #train model
-rf_random.fit(X_train,y_train)
-
-# optimal hyperparameters: {'n_estimators': 2000, 'min_samples_split': 10, 'min_samples_leaf': 2, 'max_features': 'sqrt', 'max_depth': 10, 'bootstrap': True}
-print(rf_random.best_params_)
+rf.fit(X_train,y_train)
+# print('best params', rf.best_params_)
 
 #predict results
-y_pred = rf_random.predict(X_test)
+y_pred = rf.predict(X_test)
+
+#formatting for multiple output
+# y_pred = {
+#     'max flow': results[:,0],
+#     'average flow' : results[:,1]
+# }
 
 rmse = root_mean_squared_error(y_test, y_pred)
 print('root mean squared error:', rmse)
@@ -72,17 +89,10 @@ r2 = r2_score(y_test, y_pred)
 print('r-squared:', r2)
 
 
-#-----------------------------------------------------------------
-
-# plt.title("rainfall (in) vs average flow (mgd)")
-# plt.scatter(X2, y, s=5)
-# plt.xlabel("rainfall (in)")
-# plt.ylabel("average flow (mgd)")
-# plt.show()
 
 #-----------------------------------------------------------------
 # plt.title("day of year vs average flow (mgd)")
-# plt.scatter(X1, y, s=5)
+# plt.scatter(X1, y1, s=5)
 # plt.xlabel("day of year")
 # plt.ylabel("average flow (mgd)")
 # plt.show()
@@ -90,9 +100,23 @@ print('r-squared:', r2)
 #-----------------------------------------------------------------
 
 # plt.title("rainfall (in) vs average flow (mgd)")
-# plt.scatter(X2, y, s=5)
+# plt.scatter(X2, y2, s=5)
 # plt.xlabel("rainfall (in)")
 # plt.ylabel("average flow (mgd)")
+# plt.show()
+
+#-----------------------------------------------------------------
+# plt.title("day of year vs max flow (mgd)")
+# plt.scatter(X1, y2, s=5)
+# plt.xlabel("day of year")
+# plt.ylabel("max flow (mgd)")
+# plt.show()
+
+#-----------------------------------------------------------------
+# plt.title("rainfall (in) vs max flow (mgd)")
+# plt.scatter(X2, y2, s=5)
+# plt.xlabel("rainfall (in)")
+# plt.ylabel("max flow (mgd)")
 # plt.show()
 
 #-----------------------------------------------------------------
@@ -133,25 +157,6 @@ print('r-squared:', r2)
 # plt.legend()
 # plt.show()
 
-#-----------------------------------------------------------------
-
-# plt.title("Model results: rainfall (in) vs fe flow (mgd)")
-# plt.scatter(X_test['rainfall'], y_pred, label='predicted flow', s=5)
-# plt.scatter(X_test['rainfall'], y_test, label='actual flow', s=5)
-# plt.xlabel('rainfall (in)')
-# plt.ylabel('fe flow (mgd)')
-# plt.legend()
-# plt.show()
-
-#-----------------------------------------------------------------
-
-plt.title("Model results: day of year vs fe flow (mgd)")
-plt.scatter(X_test['day of year'], y_pred, label='predicted flow', s=5)
-plt.scatter(X_test['day of year'], y_test, label='actual flow', s=5)
-plt.xlabel('day of year')
-plt.ylabel('fe flow (mgd)')
-plt.legend()
-plt.show()
 
 #-----------------------------------------------------------------
 # #3D scatter
