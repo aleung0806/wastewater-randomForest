@@ -16,7 +16,7 @@ def date_to_day_of_year(date_str):
 
 #-----------------------------------------------------------------
 #read in csv
-df = pd.read_csv("input/wastewater/clean_historic.csv") #column names: date, rainfall, average_flow, max_flow, min_flow, fe_flow
+df = pd.read_csv("input/wastewater/clean_historic.csv") #column names: date, rainfall, average flow, max flow, min flow, fe flow
 
 
 #drop empty rows
@@ -49,7 +49,16 @@ rmse = root_mean_squared_error(y_test, y_pred)
 print('root mean squared error:', rmse)
 
 r2 = r2_score(y_test, y_pred)
-print('r-square:', r2)
+print('r-squared:', r2)
+
+
+#-----------------------------------------------------------------
+
+# plt.title("rainfall (in) vs average flow (mgd)")
+# plt.scatter(X2, y, s=5)
+# plt.xlabel("rainfall (in)")
+# plt.ylabel("average flow (mgd)")
+# plt.show()
 
 #-----------------------------------------------------------------
 # plt.title("day of year vs average flow (mgd)")
@@ -106,23 +115,23 @@ print('r-square:', r2)
 
 #-----------------------------------------------------------------
 
-plt.title("Model results: rainfall (in) vs fe flow (mgd)")
-plt.scatter(X_test['rainfall'], y_pred, label='predicted flow', s=5)
-plt.scatter(X_test['rainfall'], y_test, label='actual flow', s=5)
-plt.xlabel('rainfall (in)')
-plt.ylabel('fe flow (mgd)')
-plt.legend()
-plt.show()
-
-#-----------------------------------------------------------------
-
-# plt.title("Model results: day of year vs fe flow (mgd)")
-# plt.scatter(X_test['day of year'], y_pred, label='predicted flow', s=5)
-# plt.scatter(X_test['day of year'], y_test, label='actual flow', s=5)
-# plt.xlabel('day of year')
+# plt.title("Model results: rainfall (in) vs fe flow (mgd)")
+# plt.scatter(X_test['rainfall'], y_pred, label='predicted flow', s=5)
+# plt.scatter(X_test['rainfall'], y_test, label='actual flow', s=5)
+# plt.xlabel('rainfall (in)')
 # plt.ylabel('fe flow (mgd)')
 # plt.legend()
 # plt.show()
+
+#-----------------------------------------------------------------
+
+plt.title("Model results: day of year vs fe flow (mgd)")
+plt.scatter(X_test['day of year'], y_pred, label='predicted flow', s=5)
+plt.scatter(X_test['day of year'], y_test, label='actual flow', s=5)
+plt.xlabel('day of year')
+plt.ylabel('fe flow (mgd)')
+plt.legend()
+plt.show()
 
 #-----------------------------------------------------------------
 # #3D scatter
